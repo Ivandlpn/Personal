@@ -21,18 +21,19 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    gap: 20px;
+    gap: 15px;
     width: 100%;
     max-width: 1300px;
+    margin: 0 auto;
 }
 .card {
     background-color: #ffffff;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 25px;
-    width: 240px; /* Ajusté el ancho de las tarjetas */
+    padding: 20px;
+    width: 220px; /* Ajustado para mejor cabida */
     text-align: center;
-    font-size: 18px;
+    font-size: 16px;
     color: #333;
     transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -50,19 +51,19 @@ body {
     transform: scale(1.1);
 }
 .card .crypto-name {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: bold;
     color: #333;
     margin-bottom: 10px;
 }
 .card .price {
-    font-size: 18px;
+    font-size: 16px;
     margin: 15px 0;
     color: #444;
     font-weight: bold;
 }
 .card .performance {
-    font-size: 16px;
+    font-size: 14px;
     margin-top: 10px;
     font-weight: 600;
 }
@@ -82,26 +83,22 @@ body {
     background-color: #ffffff;
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    padding: 40px;
-    width: 600px; /* Aumenté el ancho de la tarjeta de cartera */
+    padding: 30px;
+    width: 100%; /* Ajuste para ocupar todo el ancho en móviles */
     text-align: center;
-    font-size: 24px;
+    font-size: 20px;
     color: #333;
     flex: 1;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-.large-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    margin-top: 20px;
 }
 .large-card .total {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: bold;
     margin-bottom: 10px;
     color: #333;
 }
 .large-card .total-portfolio {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 600;
     color: #333;
 }
@@ -109,27 +106,27 @@ body {
 /* Medias Queries para móviles y tablets */
 @media screen and (max-width: 768px) {
     .card {
-        width: 90%; /* Ajusta el ancho de las tarjetas */
-        padding: 20px;
+        width: 100%; /* Las tarjetas ocupan todo el ancho en pantallas más pequeñas */
+        padding: 15px;
     }
     .card .crypto-name {
-        font-size: 20px;
-    }
-    .card .price {
         font-size: 16px;
     }
-    .card .performance {
+    .card .price {
         font-size: 14px;
     }
+    .card .performance {
+        font-size: 12px;
+    }
     .large-card {
-        width: 90%; /* Ajusta el ancho de la tarjeta de cartera */
-        padding: 30px;
+        width: 100%; /* La tarjeta de cartera ocupa todo el ancho */
+        padding: 20px;
     }
     .large-card .total {
-        font-size: 28px;
+        font-size: 24px;
     }
     .large-card .total-portfolio {
-        font-size: 24px;
+        font-size: 20px;
     }
 }
 
@@ -149,23 +146,23 @@ body {
         padding: 15px;
     }
     .card .crypto-name {
-        font-size: 18px;
-    }
-    .card .price {
         font-size: 14px;
     }
-    .card .performance {
+    .card .price {
         font-size: 12px;
+    }
+    .card .performance {
+        font-size: 10px;
     }
     .large-card {
         width: 100%; /* La tarjeta de cartera ocupa todo el ancho */
         padding: 20px;
     }
     .large-card .total {
-        font-size: 26px;
+        font-size: 20px;
     }
     .large-card .total-portfolio {
-        font-size: 22px;
+        font-size: 18px;
     }
 }
 
