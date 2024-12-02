@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Dashboard - Bitcoin & Ethereum</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://cryptologos.cc/logos/bitcoin-btc-logo.png">
+    <style>
+        :root {
+            --primary-color: #ffcc00;
+            --secondary-color: #ff6600;
+            --text-color: white;
+            --neon-gradient: linear-gradient(45deg, #ffcc00, #ff6600, #ff0066, #6600cc);
+        }
+
+        body {
+            background: var(--neon-gradient);
+            background-size: 400% 400%;
+            animation: gradient 10s ease infinite;
+            font-family: 'Calibri', sans-serif;
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .crypto-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            gap: 20px;
+        }
+
+        .crypto-box {
+            flex: 1 1 calc(50% - 20px);
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .crypto-box img {
+            width: 100px;
+            margin: 20px 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .price {
+            font-size: 5em;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 30px rgba(255, 255, 255, 0.8);
+        }
+
+        .price-small {
+            font-size: 1.5em;
+            margin-top: -15px;
+        }
+
+        .percentage-box {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: black;
+            font-weight: bold;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .ath {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .date {
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            .price {
+                font-size: 4em;
+            }
+
+            .price-small {
+                font-size: 1.2em;
+            }
+
+            .crypto-box img {
+                width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="crypto-container">
+        <!-- Bitcoin Section -->
+        <div class="crypto-box" id="bitcoinBox">
+            <h1>¡Bitcoin!</h1>
+            <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="Bitcoin Logo">
+            <div class="price" id="btcPriceLarge">Cargando...</div>
+            <div class="price-small" id="btcPriceSmall">
+                <div id="priceSmallValueBTC"></div>
+                <div id="pricePercentageBTC" class="percentage-box"></div>
+            </div>
+            <div class="ath" id="btcATH">ATH: Cargando...</div>
+            <div class="date" id="btcDate">Cargando...</div>
+        </div>
+
+        <!-- Ethereum Section -->
+        <div class="crypto-box" id="ethereumBox">
+            <h1>¡Ethereum!</h1>
+            <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="Ethereum Logo">
+            <div class="price" id="ethPriceLarge">Cargando...</div>
+            <div class="price-small" id="ethPriceSmall">
+                <div id="priceSmallValueETH"></div>
+                <div id="pricePercentageETH" class="percentage-box"></div>
+            </div>
+            <div class="ath" id="ethATH">ATH: Cargando...</div>
+            <div class="date" id="ethDate">Cargando...</div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchCryptoData(id) {
+            try {
+                const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true`);
+                if (!response.ok) throw new Error(`Error al obtener precio de ${id}`);
+                const data = await response.json();
+                return data[id];
+            } catch (error) {
+                console.error(`Error en fetchCryptoData (${id}):`, error);
+                return null;
+            }
+        }
+
+        async function fetchAthData(id) {
+            try {
+                const response = await fetch(`https://api.coingecko.com/api/v3/coins/${id}`);
+                if (!response.ok) throw new Error(`Error al obtener ATH de ${id}`);
+                const data = await response.json();
+                return {
+                    ath: data.market_data.ath.usd,
+                    athDate: new Date(data.market_data.ath_date.usd).toLocaleDateString('es-ES')
+                };
+            } catch (error) {
+                console.error(`Error en fetchAthData (${id}):`, error);
+                return null;
+            }
+        }
+
+        async function updateCrypto(id, elements) {
+            const { priceLarge, priceSmallValue, pricePercentage, ath, athDate } = elements;
+
+            const cryptoData = await fetchCryptoData(id);
+            const athData = await fetchAthData(id);
+
+            if (cryptoData && athData) {
+                const { usd: price, usd_24h_change: change } = cryptoData;
+                const { ath: allTimeHigh, athDate: athDateFormatted } = athData;
+
+                priceLarge.innerText = price >= 1000 ? `${Math.floor(price / 1000)}K` : price;
+                priceSmallValue.innerText = `$${price.toLocaleString('es-ES')}`;
+                pricePercentage.innerHTML = `<span style="color: ${change > 0 ? 'green' : 'red'};">${change > 0 ? '▲' : '▼'} ${change.toFixed(2)}%</span>`;
+                ath.innerText = `ATH: $${allTimeHigh.toLocaleString('es-ES')}`;
+                athDate.innerText = athDateFormatted;
+            } else {
+                priceLarge.innerText = "Error";
+                priceSmallValue.innerText = "N/A";
+                pricePercentage.innerText = "N/A";
+                ath.innerText = "ATH: N/A";
+                athDate.innerText = "N/A";
+            }
+        }
+
+        function initialize() {
+            updateCrypto('bitcoin', {
+                priceLarge: document.getElementById('btcPriceLarge'),
+                priceSmallValue: document.getElementById('priceSmallValueBTC'),
+                pricePercentage: document.getElementById('pricePercentageBTC'),
+                ath: document.getElementById('btcATH'),
+                athDate: document.getElementById('btcDate')
+            });
+
+            updateCrypto('ethereum', {
+                priceLarge: document.getElementById('ethPriceLarge'),
+                priceSmallValue: document.getElementById('priceSmallValueETH'),
+                pricePercentage: document.getElementById('pricePercentageETH'),
+                ath: document.getElementById('ethATH'),
+                athDate: document.getElementById('ethDate')
+            });
+        }
+
+        window.onload = initialize;
+    </script>
+</body>
+</html>
