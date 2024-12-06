@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Página personal para el seguimiento de criptomonedas">
+  <meta name="author" content="Iván">
+  <title>Crypto Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 1v22m5-19H7a5 5 0 0 0-5 5v8a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5v-8a5 5 0 0 0-5-5z%22/></svg>">
+  <style>
+    :root {
+      --bg-color: #f4f4f9;
+      --card-color: #ffffff;
+      --primary-text: #333333;
+      --secondary-text: #666666;
+      --positive: #28a745;
+      --negative: #dc3545;
+      --font-family: 'Arial', sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
+      background-color: var(--bg-color);
+      color: var(--primary-text);
+    }
+    header {
+      text-align: center;
+      padding: 1rem;
+      background-color: #007bff;
+      color: #ffffff;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    main {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .crypto-card {
+      background-color: var(--card-color);
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .crypto-card img {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 1rem;
+    }
+    .crypto-card h2 {
+      margin: 0.5rem 0;
+      font-size: 1.2rem;
+    }
+    .crypto-card p {
+      margin: 0.2rem 0;
+      font-size: 0.9rem;
+      color: var(--secondary-text);
+    }
+    .crypto-card .price {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .crypto-card .change {
+      font-weight: bold;
+    }
+    .crypto-card .change.positive {
+      color: var(--positive);
+    }
+    .crypto-card .change.negative {
+      color: var(--negative);
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #007bff;
+      color: #ffffff;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Crypto Dashboard</h1>
+  </header>
+  <main id="crypto-container">
+    <!-- Tarjetas de criptomonedas -->
+  </main>
+  <footer>
+    <p>Desarrollado por Iván</p>
+  </footer>
+  <script>
+    const cryptos = [
+      { name: 'Bitcoin', symbol: 'BTC', amount: 0.14285714, avgPrice: 28040.5, icon: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg' },
+      { name: 'Ethereum', symbol: 'ETH', amount: 1.28400845, avgPrice: 2302.56, icon: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg' },
+      { name: 'Cardano', symbol: 'ADA', amount: 1000, avgPrice: 0.34, icon: 'https://cryptologos.cc/logos/cardano-ada-logo.svg' },
+      { name: 'Polkadot', symbol: 'DOT', amount: 50, avgPrice: 7.48, icon: 'https://cryptologos.cc/logos/polkadot-new-dot-logo.svg' },
+    ];
+
+    const container = document.getElementById('crypto-container');
+
+    async function fetchCryptoData() {
+      const responses = await Promise.all(
+        cryptos.map(crypto =>
+          fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${crypto.name.toLowerCase()}&vs_currencies=eur&include_24hr_change=true`)
+        )
+      );
+
+      const data = await Promise.all(responses.map(res => res.json()));
+
+      container.innerHTML = '';
+      cryptos.forEach((crypto, index) => {
+        const price = data[index][crypto.name.toLowerCase()].eur;
+        const change = data[index][crypto.name.toLowerCase()].eur_24h_change;
+        const profit = ((price - crypto.avgPrice) * crypto.amount).toFixed(2);
+
+        const card = document.createElement('div');
+        card.className = 'crypto-card';
+
+        card.innerHTML = `
+          <img src="${crypto.icon}" alt="${crypto.name} logo">
+          <h2>${crypto.name} (${crypto.symbol})</h2>
+          <p class="price">Precio: €${price.toFixed(2)}</p>
+          <p class="change ${change >= 0 ? 'positive' : 'negative'}">Variación: ${change >= 0 ? '▲' : '▼'} ${change.toFixed(2)}%</p>
+          <p class="profit">Beneficio: €${profit}</p>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // Actualiza los datos cada 30 segundos
+    fetchCryptoData();
+    setInterval(fetchCryptoData, 30000);
+  </script>
+</body>
+</html>
