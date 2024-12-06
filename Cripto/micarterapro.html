@@ -214,14 +214,14 @@
 
     .profit-metrics {
       display: flex;
-      gap: 1rem;
       align-items: center;
       justify-content: center;
-      flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    .profit-metrics .amount {
-      font-size: 1.4rem;
+    .profit-label {
+      margin: 0 1rem;
+      color: var(--secondary-text);
     }
 
     #totalProfitPercentage {
@@ -229,15 +229,6 @@
     }
 
     @media (max-width: 768px) {
-      .profit-metrics {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      .profit-metrics .amount {
-        font-size: 1.2rem;
-      }
-
       #totalProfitPercentage {
         font-size: 1rem;
       }
