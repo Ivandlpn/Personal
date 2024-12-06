@@ -66,11 +66,12 @@
       transition: transform 0.3s, box-shadow 0.3s;
       backdrop-filter: blur(5px);
       background: rgba(255, 255, 255, 0.95);
+      cursor: pointer;
     }
 
     .crypto-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
     }
 
     .crypto-card img {
@@ -97,6 +98,15 @@
       font-weight: bold;
       margin: 1rem 0;
       color: var(--primary-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .price-change-24h {
+      font-size: 1rem;
+      font-weight: 600;
     }
 
     .metrics {
@@ -165,12 +175,139 @@
       color: var(--negative);
       font-size: 1.2rem;
     }
+
+    .portfolio-summary {
+      padding: 1rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .summary-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .summary-card h2 {
+      margin: 0 0 1rem 0;
+      color: #2c3e50;
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    .summary-details {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .total-value, .total-profit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .label {
+      font-size: 1.2rem;
+      color: #34495e;
+    }
+
+    .amount {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    #totalValue {
+      color: #2c3e50;
+      font-size: 2.2rem;
+    }
+
+    .profit-metrics {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .summary-details {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+
+    .ath-info {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .ath-value {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .portfolio-distribution {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-container {
+      height: 200px;
+      margin-top: 1rem;
+    }
+
+    .mini-chart {
+      height: 50px;
+      margin: 0.5rem 0;
+    }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>Mi Criptocartera</h1>
   </header>
+  <div class="portfolio-summary">
+    <div class="summary-card">
+      <h2>Resumen de Cartera</h2>
+      <div class="summary-details">
+        <div class="total-value">
+          <span class="label">Valor Total</span>
+          <span class="amount" id="totalValue">0,00€</span>
+        </div>
+        <div class="total-profit">
+          <span class="label">Beneficio</span>
+          <div class="profit-metrics">
+            <span class="amount" id="totalProfitEur">+0,00€</span>
+            <span class="amount" id="totalProfitPercentage">▲ 0,00%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <main id="crypto-container">
     <!-- Tarjetas de criptomonedas -->
   </main>
@@ -179,10 +316,42 @@
   </footer>
   <script>
     const cryptos = [
-      { name: 'Bitcoin', symbol: 'BTCEUR', amount: 0.14285714, avgPrice: 28040.5, icon: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg' },
-      { name: 'Ethereum', symbol: 'ETHEUR', amount: 1.28400845, avgPrice: 2302.56, icon: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg' },
-      { name: 'Cardano', symbol: 'ADAEUR', amount: 1000, avgPrice: 0.34, icon: 'https://cryptologos.cc/logos/cardano-ada-logo.svg' },
-      { name: 'Polkadot', symbol: 'DOTEUR', amount: 50, avgPrice: 7.48, icon: 'https://cryptologos.cc/logos/polkadot-new-dot-logo.svg' },
+      { 
+        name: 'Bitcoin', 
+        symbol: 'BTCEUR', 
+        amount: 0.14285714, 
+        avgPrice: 28040.5, 
+        icon: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg', 
+        cmcUrl: 'https://coinmarketcap.com/currencies/bitcoin/',
+        coingeckoId: 'bitcoin'
+      },
+      { 
+        name: 'Ethereum', 
+        symbol: 'ETHEUR', 
+        amount: 1.28400845, 
+        avgPrice: 2302.56, 
+        icon: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg', 
+        cmcUrl: 'https://coinmarketcap.com/currencies/ethereum/',
+        coingeckoId: 'ethereum'
+      },
+      { 
+        name: 'Cardano', 
+        symbol: 'ADAEUR', 
+        amount: 1000, 
+        avgPrice: 0.34, 
+        icon: 'https://cryptologos.cc/logos/cardano-ada-logo.svg', 
+        cmcUrl: 'https://coinmarketcap.com/currencies/cardano/',
+        coingeckoId: 'cardano'
+      },
+      { 
+        name: 'Polkadot', 
+        symbol: 'DOTEUR', 
+        amount: 50, 
+        avgPrice: 7.48, 
+        icon: 'https://cryptologos.cc/logos/polkadot-new-dot-logo.svg', 
+        cmcUrl: 'https://coinmarketcap.com/currencies/polkadot/',
+        coingeckoId: 'polkadot'
+      }
     ];
 
     const container = document.getElementById('crypto-container');
@@ -204,40 +373,115 @@
       `;
     }
 
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit'
+      });
+    }
+
+    async function fetchAthData(crypto) {
+      try {
+        // Usar la API de Binance para obtener el ATH de los últimos 365 días
+        const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${crypto.symbol}&interval=1d&limit=365`);
+        const data = await response.json();
+        
+        // Encontrar el precio más alto
+        let maxPrice = 0;
+        let athDate = null;
+        
+        data.forEach(candle => {
+          const price = parseFloat(candle[2]); // High price
+          if (price > maxPrice) {
+            maxPrice = price;
+            athDate = new Date(candle[0]); // Timestamp
+          }
+        });
+
+        return {
+          athPrice: maxPrice,
+          athDate: formatDate(athDate)
+        };
+      } catch (error) {
+        console.error(`Error al obtener ATH para ${crypto.name}:`, error);
+        return null;
+      }
+    }
+
     async function fetchCryptoData() {
       showLoading();
       
       try {
+        // Obtener precios actuales y variación 24h
         const symbols = cryptos.map(crypto => crypto.symbol).join(',');
-        const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbols=["${symbols.split(',').join('","')}"]`);
+        const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=["${symbols.split(',').join('","')}"]`);
         
         if (!response.ok) throw new Error('Error al obtener datos');
         
-        const prices = await response.json();
+        const pricesData = await response.json();
+        
+        // Calcular totales
+        let totalValue = 0;
+        let totalInvested = 0;
+
+        cryptos.forEach(crypto => {
+          const priceData = pricesData.find(p => p.symbol === crypto.symbol);
+          if (!priceData) return;
+          const currentPrice = parseFloat(priceData.lastPrice);
+          totalValue += currentPrice * crypto.amount;
+          totalInvested += crypto.avgPrice * crypto.amount;
+        });
+
+        const totalProfit = totalValue - totalInvested;
+        const totalProfitPercentage = ((totalValue / totalInvested) - 1) * 100;
+
+        // Actualizar el resumen
+        document.getElementById('totalValue').textContent = `${formatNumber(totalValue)}€`;
+        document.getElementById('totalProfitEur').textContent = `${totalProfit >= 0 ? '+' : '-'}${formatNumber(Math.abs(totalProfit))}€`;
+        document.getElementById('totalProfitEur').className = `amount ${totalProfit >= 0 ? 'positive' : 'negative'}`;
+        document.getElementById('totalProfitPercentage').textContent = `(${totalProfitPercentage >= 0 ? '▲' : '▼'} ${formatNumber(Math.abs(totalProfitPercentage))}%)`;
+        document.getElementById('totalProfitPercentage').className = `amount ${totalProfitPercentage >= 0 ? 'positive' : 'negative'}`;
+
+        // Obtener ATH para todas las criptos
+        const athPromises = cryptos.map(crypto => fetchAthData(crypto));
+        const athData = await Promise.all(athPromises);
         
         container.innerHTML = '';
-        cryptos.forEach(crypto => {
-          const priceData = prices.find(p => p.symbol === crypto.symbol);
+        cryptos.forEach((crypto, index) => {
+          const priceData = pricesData.find(p => p.symbol === crypto.symbol);
+          const ath = athData[index];
           if (!priceData) return;
 
-          const price = parseFloat(priceData.price);
+          const price = parseFloat(priceData.lastPrice);
+          const priceChange24h = parseFloat(priceData.priceChangePercent);
           const profit = (price - crypto.avgPrice) * crypto.amount;
           const profitPercentage = ((price - crypto.avgPrice) / crypto.avgPrice) * 100;
 
           const card = document.createElement('div');
           card.className = 'crypto-card';
+          card.onclick = () => window.open(crypto.cmcUrl, '_blank');
 
           card.innerHTML = `
             <img src="${crypto.icon}" alt="${crypto.name} logo" onerror="this.src='fallback-icon.png'">
             <h2>${crypto.name} (${crypto.symbol.replace('EUR', '')})</h2>
-            <p class="price">${formatNumber(price)}€</p>
+            <p class="price">
+              ${formatNumber(price)}€ 
+              <span class="price-change-24h ${priceChange24h >= 0 ? 'positive' : 'negative'}">
+                (${priceChange24h >= 0 ? '▲' : '▼'} ${formatNumber(Math.abs(priceChange24h))}%)
+              </span>
+            </p>
             <div class="metrics">
               <span class="${profit >= 0 ? 'positive' : 'negative'}">
                 ${profit >= 0 ? '+' : '-'}${formatNumber(Math.abs(profit))}€
               </span>
               <span class="${profitPercentage >= 0 ? 'positive' : 'negative'}">
-                ${profitPercentage >= 0 ? '▲' : '▼'} ${formatNumber(Math.abs(profitPercentage))}%
+                (${profitPercentage >= 0 ? '▲' : '▼'} ${formatNumber(Math.abs(profitPercentage))}%)
               </span>
+            </div>
+            <div class="ath-info">
+              ATH: <span class="ath-value">${ath ? formatNumber(ath.athPrice) : '?'}€</span> ${ath ? `(${ath.athDate})` : ''}
             </div>
           `;
 
